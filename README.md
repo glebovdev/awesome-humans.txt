@@ -8,7 +8,15 @@
 
 A curated list of awesome [humans.txt](http://humanstxt.org/) resources.
 
-## Contents
+## Contributing
+
+Details on how to contribute can be found in [CONTRIBUTING.md](CONTRIBUTING.md).  
+In short:
+- List is alphabetically sorted
+- To add/edit: submit a pull request to `README.md`
+- To delete: open an issue to start a discussion
+
+## Content
 
 ### Art
 - [Artsy](https://www.artsy.net/humans.txt)
