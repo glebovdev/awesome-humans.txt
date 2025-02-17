@@ -17,7 +17,7 @@ jobs:
           set -e  # Exit on any error
           
           echo "Extracting URLs from README.md..."
-          URLS=$(./scripts/extract-urls.sh)
+          URLS=$(bash ./scripts/extract-urls.sh)
           if [ -z "$URLS" ]; then
             echo "No URLs found in README.md"
             exit 1
