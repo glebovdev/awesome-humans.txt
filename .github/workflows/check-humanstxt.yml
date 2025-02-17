@@ -15,17 +15,19 @@ jobs:
         id: check
         run: |
           echo "Extracting URLs from README.md..."
-          FAILED_URLS=()
-          TOTAL=0
+          # First collect all URLs in an array
+          mapfile -t URLS < <(bash ./scripts/extract-urls.sh)
           
-          while IFS= read -r url; do
-            ((TOTAL++))
-            echo "Checking ($TOTAL): $url"
+          FAILED_URLS=()
+          TOTAL=${#URLS[@]}
+          
+          for url in "${URLS[@]}"; do
+            echo "Checking: $url"
             if ! curl --max-time 10 --output /dev/null --silent --head --fail "$url"; then
               FAILED_URLS+=("$url")
               echo "::warning::Failed to access $url"
             fi
-          done < <(bash ./scripts/extract-urls.sh)
+          done
           
           echo "Checked $TOTAL URLs, found ${#FAILED_URLS[@]} broken links"
           
