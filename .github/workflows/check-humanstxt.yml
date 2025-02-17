@@ -1,0 +1,73 @@
+name: Check humans.txt Links
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Run daily at midnight UTC
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  check-links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check humans.txt URLs
+        id: check
+        run: |
+          set -e  # Exit on any error
+          
+          echo "Extracting URLs from README.md..."
+          URLS=$(./scripts/extract-urls.sh)
+          if [ -z "$URLS" ]; then
+            echo "No URLs found in README.md"
+            exit 1
+          fi
+          
+          FAILED_URLS=()
+          TOTAL=0
+          FAILED=0
+          while read -r url; do
+            ((TOTAL++))
+            echo "Checking ($TOTAL): $url"
+            if ! curl --max-time 10 --output /dev/null --silent --head --fail "$url"; then
+              FAILED_URLS+=("$url")
+              ((FAILED++))
+              echo "::warning::Failed to access $url"
+            fi
+          done <<< "$URLS"
+          
+          echo "Checked $TOTAL URLs, found $FAILED broken links"
+          printf "urls=%s\n" "${FAILED_URLS[*]}" >> $GITHUB_OUTPUT
+
+      - name: Create issues for broken links
+        if: steps.check.outputs.urls
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const urls = steps.check.outputs.urls.split(' ');
+            for (const url of urls) {
+              // Check for existing open issues
+              const existingIssues = await github.rest.issues.listForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.name,
+                state: 'open',
+                labels: 'broken-link'
+              });
+              
+              // Skip if issue already exists for this URL
+              if (existingIssues.data.some(issue => issue.title === `Broken humans.txt link: ${url}`)) {
+                continue;
+              }
+              
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.name,
+                title: `Broken humans.txt link: ${url}`,
+                body: `The humans.txt link ${url} is not accessible.\nPlease verify the link and update or remove it from the README.md file.`,
+                labels: ['broken-link']
+              });
+            } 
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true 
