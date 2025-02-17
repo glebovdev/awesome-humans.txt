@@ -9,7 +9,7 @@ fi
 # Extract humans.txt URLs from README.md
 FOUND=false
 while IFS= read -r line; do
-    if [[ $line =~ \[(.*)\]\((http[s]?://[^)]+/humans\.txt)\) ]]; then
+    if [[ $line =~ \[(.*)\]\((.*humans\.txt)\) ]]; then
         echo "${BASH_REMATCH[2]}"
         FOUND=true
     fi
@@ -19,4 +19,4 @@ done < README.md
 if [ "$FOUND" = false ]; then
     echo "No humans.txt URLs found in README.md"
     exit 1
-fi 
+fi
