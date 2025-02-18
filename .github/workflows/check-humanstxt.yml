@@ -52,12 +52,21 @@ jobs:
         with:
           script: |
             const urls = '${{ steps.check.outputs.urls }}'.trim().split(' ').filter(Boolean);
+            const { owner, repo } = context.repo;
+
+            console.log(`Creating issues for repo: ${owner}/${repo}`);
+
             for (const url of urls) {
-              await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.name,
-                title: `Broken humans.txt link: ${url}`,
-                body: `The humans.txt link ${url} is not accessible.\nPlease verify the link and update or remove it from the README.md file.`,
-                labels: ['broken-link']
-              });
+              try {
+                await github.rest.issues.create({
+                  owner: owner,
+                  repo: repo,
+                  title: `Broken humans.txt link: ${url}`,
+                  body: `The humans.txt link ${url} is not accessible.\nPlease verify the link and update or remove it from the README.md file.`,
+                  labels: ['broken-link']
+                });
+                console.log(`Created issue for ${url}`);
+              } catch (error) {
+                console.error(`Failed to create issue for ${url}: ${error.message}`);
+              }
             }
