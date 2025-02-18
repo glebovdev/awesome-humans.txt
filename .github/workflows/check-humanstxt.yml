@@ -18,29 +18,39 @@ jobs:
       - name: Check humans.txt URLs
         id: check
         run: |
-          echo "Extracting URLs from README.md..."
-          # First collect all URLs in an array
-          mapfile -t URLS < <(bash ./scripts/extract-urls.sh)
+          echo "Starting URL check at $(date)"
+          
+          if ! mapfile -t URLS < <(bash ./scripts/extract-urls.sh); then
+            echo "Error: Failed to extract URLs"
+            exit 1
+          fi
           
           FAILED_URLS=()
           TOTAL=${#URLS[@]}
+          echo "Found $TOTAL URLs to check"
           
           for url in "${URLS[@]}"; do
             echo "Checking: $url"
-            if ! curl --max-time 10 \
-                      --output /dev/null \
+            if ! response_code=$(curl -o /dev/null -w "%{http_code}" \
+                      --max-time 10 \
                       --silent \
-                      --head \
                       --fail \
                       --location \
                       --user-agent "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
-                      "$url"; then
-                FAILED_URLS+=("$url")
-                echo "::warning::Failed to access $url"
+                      "$url") || [ -z "$response_code" ]; then
+              FAILED_URLS+=("$url:${response_code:-unknown}")
+              echo "::warning::Failed to access $url (Status: ${response_code:-unknown})"
             fi
+          
+            sleep 1  # Prevent rate limiting
           done
           
-          echo "Checked $TOTAL URLs, found ${#FAILED_URLS[@]} broken links"
+          SUCCESS=$((TOTAL-${#FAILED_URLS[@]}))
+          echo "Check completed at $(date)"
+          echo "Summary:"
+          echo "- Total URLs: $TOTAL"
+          echo "- Successful: $SUCCESS"
+          echo "- Failed: ${#FAILED_URLS[@]}"
           
           if [ ${#FAILED_URLS[@]} -gt 0 ]; then
             echo "urls=${FAILED_URLS[*]}" >> $GITHUB_OUTPUT
@@ -53,20 +63,47 @@ jobs:
           script: |
             const urls = '${{ steps.check.outputs.urls }}'.trim().split(' ').filter(Boolean);
             const { owner, repo } = context.repo;
-
+            const checkDate = new Date().toISOString();
+            
             console.log(`Creating issues for repo: ${owner}/${repo}`);
-
-            for (const url of urls) {
+            
+            const existingIssues = await github.rest.issues.listForRepo({
+              owner,
+              repo,
+              state: 'open',
+              labels: ['broken-link']
+            });
+            
+            const existingUrls = new Set(
+              existingIssues.data.map(issue => 
+                issue.title.replace('Broken humans.txt link: ', '').split(':')[0]
+              )
+            );
+            
+            for (const urlWithCode of urls) {
+              const [url, statusCode] = urlWithCode.split(':');
+            
+              if (existingUrls.has(url)) {
+                console.log(`Issue already exists for ${url}`);
+                continue;
+              }
+            
               try {
                 await github.rest.issues.create({
-                  owner: owner,
-                  repo: repo,
+                  owner,
+                  repo,
                   title: `Broken humans.txt link: ${url}`,
-                  body: `The humans.txt link ${url} is not accessible.\nPlease verify the link and update or remove it from the README.md file.`,
-                  labels: ['broken-link']
+                  body: `The humans.txt link ${url} is not accessible.
+                  - Status Code: ${statusCode}
+                  - Last Checked: ${checkDate}
+            
+                  Please verify the link and update or remove it from the README.md file.`,
+                labels: ['broken-link']
                 });
-                console.log(`Created issue for ${url}`);
+                  console.log(`Created issue for ${url}`);
+            
+                  await new Promise(resolve => setTimeout(resolve, 1000));
               } catch (error) {
-                console.error(`Failed to create issue for ${url}: ${error.message}`);
+                  console.error(`Failed to create issue for ${url}: ${error.message}`);
               }
             }
