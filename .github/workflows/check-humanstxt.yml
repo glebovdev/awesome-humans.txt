@@ -53,9 +53,7 @@ jobs:
           echo "- Failed: ${#FAILED_URLS[@]}"
           
           if [ ${#FAILED_URLS[@]} -gt 0 ]; then
-            echo "urls<<EOF" >> $GITHUB_OUTPUT
-            printf "%s\n" "${FAILED_URLS[@]}" >> $GITHUB_OUTPUT
-            echo "EOF" >> $GITHUB_OUTPUT
+            echo "urls=${FAILED_URLS[*]/#/|}" >> $GITHUB_OUTPUT
           fi
 
       - name: Create issues for broken links
@@ -63,7 +61,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const urls = '${{ steps.check.outputs.urls }}'.trim().split('\n');
+            const urls = '${{ steps.check.outputs.urls }}'.trim().split('|').filter(Boolean);
             const { owner, repo } = context.repo;
             const checkDate = new Date().toISOString();
             
