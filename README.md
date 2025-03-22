@@ -23,7 +23,6 @@ In short:
 - [The Lovely Geek](https://thelovelygeek.com/humans.txt)
 
 ### Hosting Services
-- [000Webhost](https://www.000webhost.com/humans.txt)
 - [Rackspace](https://mycloud.rackspace.com/humans.txt)
 
 ### Media
