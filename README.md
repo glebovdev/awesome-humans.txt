@@ -32,7 +32,6 @@ In short:
 - [The Guardian](https://www.theguardian.com/humans.txt)
 
 ### Miscellaneous
-- [Burning Diode](https://www.burningdiode.com/humans.txt)
 - [Contrast Finder](https://app.contrast-finder.org/humans.txt)
 - [DataGubbe](https://www.datagubbe.se/humans.txt)
 - [Ninja Squad](https://ninja-squad.com/humans.txt)
