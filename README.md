@@ -23,7 +23,6 @@ In short:
 - [The Lovely Geek](https://thelovelygeek.com/humans.txt)
 
 ### Hosting Services
-- [000Webhost](https://www.000webhost.com/humans.txt)
 - [Rackspace](https://mycloud.rackspace.com/humans.txt)
 
 ### Media
@@ -35,7 +34,6 @@ In short:
 ### Miscellaneous
 - [Contrast Finder](https://app.contrast-finder.org/humans.txt)
 - [DataGubbe](https://www.datagubbe.se/humans.txt)
-- [Intellisult](https://www.intellisult.com/humans.txt)
 - [Ninja Squad](https://ninja-squad.com/humans.txt)
 - [Ratfactor.com](https://www.ratfactor.com/humans.txt)
 - [ss64.com](https://ss64.com/humans.txt)
@@ -64,4 +62,3 @@ In short:
 - [Google.com](https://www.google.com/humans.txt)
 - [HTML5Rocks](https://www.html5rocks.com/humans.txt)
 - [Space10](https://space10.io/humans.txt)
-
