@@ -33,7 +33,6 @@ In short:
 - [The Guardian](https://www.theguardian.com/humans.txt)
 
 ### Miscellaneous
-- [Burning Diode](https://www.burningdiode.com/humans.txt)
 - [Contrast Finder](https://app.contrast-finder.org/humans.txt)
 - [DataGubbe](https://www.datagubbe.se/humans.txt)
 - [Intellisult](https://www.intellisult.com/humans.txt)
@@ -66,4 +65,3 @@ In short:
 - [HTML5Rocks](https://www.html5rocks.com/humans.txt)
 - [Space10](https://space10.io/humans.txt)
 
- 
