@@ -44,7 +44,6 @@ In short:
 ### Productivity Tools
 - [Disqus](https://disqus.com/humans.txt)
 - [Slack](https://app.slack.com/humans.txt)
-- [Trello](https://trello.com/humans.txt)
 
 ### Programming Languages
 - [PHP.net](https://www.php.net/humans.txt)
