@@ -64,7 +64,7 @@ jobs:
 
       - name: Create issues for broken links
         if: steps.check.outputs.urls
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const urls = '${{ steps.check.outputs.urls }}'.trim().split(' ').filter(Boolean);
