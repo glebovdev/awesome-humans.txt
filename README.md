@@ -60,4 +60,3 @@ In short:
 ### Technology
 - [Google.com](https://www.google.com/humans.txt)
 - [HTML5Rocks](https://www.html5rocks.com/humans.txt)
-- [Space10](https://space10.io/humans.txt)
